@@ -1,69 +1,24 @@
 package com.istad.demo.mapper;
 
 import com.istad.demo.dto.CreateUserRequestDTO;
-import org.springframework.stereotype.Component;
-import com.istad.demo.model.User;
 import com.istad.demo.dto.UpdateUserRequestDTO;
 import com.istad.demo.dto.UserResponseDTO;
+import com.istad.demo.model.User;
+import org.mapstruct.*;
 
-@Component
-public class UserMapper {
+@Mapper(componentModel = "spring")
+public interface UserMapper {
 
-    // Convert CreateUserRequestDTO to User Model
-    public User toModel(CreateUserRequestDTO dto, Long id) {
-        if (dto == null) {
-            return null;
-        }
+    // Create User from DTO
+    @Mapping(target = "id", source = "id") // Optional: if you want to pass custom id
+    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
+    User toModel(CreateUserRequestDTO dto, Long id);
 
-        User user = new User();
-        user.setId(id);
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
-        user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword()); // Should be encrypted in real app
-        user.setPhoneNumber(dto.getPhoneNumber());
-        user.setCreatedAt(java.time.LocalDateTime.now());
-        user.setUpdatedAt(java.time.LocalDateTime.now());
+    // Convert entity to response DTO
+    UserResponseDTO toResponseDTO(User user);
 
-        return user;
-    }
-
-    // Convert User Model to UserResponseDTO
-    public UserResponseDTO toResponseDTO(User user) {
-        if (user == null) {
-            return null;
-        }
-
-        return new UserResponseDTO(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                user.getPhoneNumber(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
-        );
-    }
-
-    // Update User Model from UpdateUserRequestDTO
-    public void updateModelFromDTO(User user, UpdateUserRequestDTO dto) {
-        if (user == null || dto == null) {
-            return;
-        }
-
-        if (dto.getFirstName() != null && !dto.getFirstName().trim().isEmpty()) {
-            user.setFirstName(dto.getFirstName());
-        }
-        if (dto.getLastName() != null && !dto.getLastName().trim().isEmpty()) {
-            user.setLastName(dto.getLastName());
-        }
-        if (dto.getEmail() != null && !dto.getEmail().trim().isEmpty()) {
-            user.setEmail(dto.getEmail());
-        }
-        if (dto.getPhoneNumber() != null && !dto.getPhoneNumber().trim().isEmpty()) {
-            user.setPhoneNumber(dto.getPhoneNumber());
-        }
-
-        user.setUpdatedAt(java.time.LocalDateTime.now());
-    }
+    // Update existing User from DTO
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateModelFromDTO(UpdateUserRequestDTO dto, @MappingTarget User user);
 }

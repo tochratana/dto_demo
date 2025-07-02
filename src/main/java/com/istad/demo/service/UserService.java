@@ -64,7 +64,7 @@ public class UserService {
                         throw new RuntimeException("Email already exists: " + requestDTO.getEmail());
                     }
 
-                    userMapper.updateModelFromDTO(user, requestDTO);
+                    userMapper.updateModelFromDTO( requestDTO, user);
                     User updatedUser = userRepository.save(user);
                     return userMapper.toResponseDTO(updatedUser);
                 });
