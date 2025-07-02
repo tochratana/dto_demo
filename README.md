@@ -1,8 +1,4 @@
-================================ 
-8. USAGE EXAMPLES & TEST DATA
-
-================================
-
+### USAGE EXAMPLES & TEST DATA
 
 SAMPLE DATA (Pre-loaded in UserRepository):
 1. ID: 1, Name: John Doe, Email: john.doe@example.com, Phone: +1234567890
